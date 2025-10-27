@@ -15,10 +15,10 @@ A modular framework for training and using diffusion models and flow matching to
 ## 📁 Project Structure
 
 ```
-cosmo/
+FOCUS/
 ├── models/                  # Model architectures
 │   ├── embeddings.py        # Time/condition embeddings
-│   └── unet.py              # UNet model (add transformers, etc.)
+│   └── unet.py              # UNet model
 │
 ├── dataloaders/             # Data handling
 │   ├── cosmology_dataset.py # PyTorch Dataset
@@ -57,10 +57,8 @@ cosmo/
 ├── configs/                 # Default configurations
 │   └── default.yaml
 │
-├── scripts/                 # Testing & visualization scripts
-│   ├── visualize_data.py
-│   ├── test_diffusion.py
-│   └── legacy/              # Old code versions (for reference)
+├── docs/                    # Documentation
+│   └── README.md            # Detailed documentation
 │
 ├── train.py                 # Main training entry point
 ├── inference.py             # Main inference entry point
@@ -272,7 +270,7 @@ sampling:
 
 ## 📄 License
 
-This project is for research purposes.
+MIT License. See [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
