@@ -1,0 +1,75 @@
+# Default configuration for cosmology diffusion models
+
+# Data - can use 'processed' as shortcut
+data:
+  data_dir: "processed"  # Shortcut for "./processed_data"
+  # Alternative: specify full paths
+  # maps_path: "./processed_data/maps_normalized.npy"
+  # params_path: "./processed_data/params_normalized.npy"
+  
+  train_split: 0.9
+  num_workers: 4
+  shuffle: true  # Random shuffle for train/val split
+
+# Model - modular architecture selection
+model:
+  from: "SimpleUNet"  # Can also use: "models.unet.SimpleUNet"
+  # Model-specific arguments
+  in_channels: 1
+  out_channels: 1
+  cond_dim: 6
+  base_channels: 64
+  channel_mults: [1, 2, 4, 8]
+  time_dim: 256
+
+  # Example for future models:
+  # from: "models.dit.DiT"
+  # hidden_size: 384
+  # depth: 12
+  # num_heads: 6
+
+# Diffusion
+diffusion:
+  timesteps: 1000
+  beta_start: 1.0e-4
+  beta_end: 0.02
+  schedule: "linear"  # linear, cosine, quadratic
+
+# Training
+training:
+  batch_size: 2
+  num_epochs: 200
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  cfg_prob: 0.1  # CFG unconditional probability
+  sample_every: 10
+  gradient_clip: 1.0
+  
+  # Optimizer
+  optimizer: "adamw"  # adamw, adam, sgd
+  
+  # Scheduler options
+  scheduler:
+    name: "plateau"  # plateau, cosine, linear, step
+    # Plateau specific
+    factor: 0.5
+    patience: 3
+    min_lr: 1.0e-7
+    
+    # Cosine annealing specific
+    # T_max: 200
+    # eta_min: 1.0e-6
+    
+    # Step specific
+    # step_size: 50
+    # gamma: 0.1
+
+# Sampling
+sampling:
+  method: "ddim"  # ddim or ddpm
+  ddim_timesteps: 50
+  cfg_scale: 2.0
+  eta: 0.0
+
+# Hardware
+device: "cuda"  # cuda or cpu
