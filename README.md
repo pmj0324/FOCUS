@@ -1,4 +1,4 @@
-# FOCUS: Flow Matching & Diffusion Model for Cosmological Universe Simulation
+# FOCUS: Flow & diffusiOn model for Cosmological Universe Simulation
 
 A modular framework for training and using diffusion models and flow matching to generate 2D dark matter maps conditioned on cosmological parameters.
 
