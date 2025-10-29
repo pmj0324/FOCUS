@@ -192,14 +192,21 @@ def create_dataloaders_with_split(config):
         maps_path, params_path = resolve_data_paths(data_dir)
     
     shuffle = config['data'].get('shuffle', True)
-    
+
+    # Augmentation settings (optional)
+    training_cfg = config.get('training', {})
+    use_augmentation = training_cfg.get('use_augmentation', False)
+    augmentation_config = training_cfg.get('augmentation', None)
+
     return create_dataloaders(
         maps_path=maps_path,
         params_path=params_path,
         batch_size=config['training']['batch_size'],
         train_split=config['data']['train_split'],
         num_workers=config['data']['num_workers'],
-        shuffle=shuffle
+        shuffle=shuffle,
+        use_augmentation=use_augmentation,
+        augmentation_config=augmentation_config
     )
 
 

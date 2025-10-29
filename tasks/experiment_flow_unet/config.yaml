@@ -71,6 +71,3 @@ device: "cuda"
 # - Training objective: ||v_pred - (x_1 - x_0)||²
 
 
-
-
-

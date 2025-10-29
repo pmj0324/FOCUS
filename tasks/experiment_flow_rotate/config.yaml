@@ -2,8 +2,8 @@
 # This experiment uses Flow Matching instead of Diffusion
 
 experiment:
-  name: "flow_matching_baseline"
-  description: "Flow Matching with 128 base channels for cosmological field generation"
+  name: "flow_matching_rotate"
+  description: "Flow Matching with rotation/flip augmentation only"
   created: "2024-10-29"
   method: "flow"
 
@@ -43,6 +43,12 @@ training:
   sample_every: 1  # Generate samples every epoch
   gradient_clip: 1.0
   
+  # Data Augmentation (Rotate/Flip only)
+  use_augmentation: true
+  augmentation:
+    rotation_p: 0.75   # Probability to apply 90° rotations
+    flip_p: 0.5        # Probability for horizontal/vertical flips
+  
   # Optimizer
   optimizer: "adamw"
   
@@ -69,8 +75,5 @@ device: "cuda"
 # - Predicts vector field v instead of noise ε
 # - Typically faster sampling than Diffusion (10-50 steps vs 50-1000)
 # - Training objective: ||v_pred - (x_1 - x_0)||²
-
-
-
 
 

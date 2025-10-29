@@ -132,3 +132,7 @@ where x_t = (1-t)x_0 + t·x_1
 4. **Batch size** can be same as Diffusion
 5. **Learning rate** can be same as Diffusion (1e-4)
 
+
+
+
+
