@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 def compute_power_spectrum(field, box_size=75.0):
     """
-    Compute 2D power spectrum
+    Compute 2D power spectrum (physically correct implementation)
     
     Args:
         field: (H, W) 2D field
@@ -20,33 +20,45 @@ def compute_power_spectrum(field, box_size=75.0):
     if torch.is_tensor(field):
         field = field.cpu().numpy()
     
-    # FFT
+    # 1. DC 제거 (평균 빼기)
     field_mean = field.mean()
     field_centered = field - field_mean
     
+    # 2. FFT 및 shift
     fft = np.fft.fft2(field_centered)
-    power = np.abs(fft) ** 2
+    fft_shift = np.fft.fftshift(fft)
     
-    # Wave numbers
+    # 3. Power spectrum with normalization
     H, W = field.shape
-    kx = np.fft.fftfreq(W, d=box_size/W) * 2 * np.pi
-    ky = np.fft.fftfreq(H, d=box_size/H) * 2 * np.pi
+    power_2d = np.abs(fft_shift) ** 2 / (H * W)
     
-    kx_grid, ky_grid = np.meshgrid(kx, ky)
+    # 4. k-grid 생성 (물리적 단위)
+    kx_freq = np.fft.fftfreq(W, d=box_size/W) * 2 * np.pi
+    ky_freq = np.fft.fftfreq(H, d=box_size/H) * 2 * np.pi
+    kx_shift = np.fft.fftshift(kx_freq)
+    ky_shift = np.fft.fftshift(ky_freq)
+    
+    kx_grid, ky_grid = np.meshgrid(kx_shift, ky_shift)
     k_grid = np.sqrt(kx_grid**2 + ky_grid**2)
     
-    # Bin power spectrum
-    k_bins = np.logspace(np.log10(k_grid[k_grid > 0].min()), 
-                         np.log10(k_grid.max()), 
-                         30)
-    k_centers = (k_bins[:-1] + k_bins[1:]) / 2
+    # 5. Radial averaging
+    k_flat = k_grid.flatten()
+    power_flat = power_2d.flatten()
     
-    Pk = np.zeros(len(k_centers))
+    k_min = k_flat[k_flat > 0].min()
+    k_max = k_flat.max()
     
-    for i in range(len(k_centers)):
-        mask = (k_grid >= k_bins[i]) & (k_grid < k_bins[i+1])
+    # Log bins (우주론적 관례)
+    n_bins = 30
+    k_bins_edges = np.logspace(np.log10(k_min), np.log10(k_max), n_bins + 1)
+    k_centers = (k_bins_edges[:-1] + k_bins_edges[1:]) / 2
+    
+    Pk = np.zeros(n_bins)
+    
+    for i in range(n_bins):
+        mask = (k_flat >= k_bins_edges[i]) & (k_flat < k_bins_edges[i+1])
         if mask.sum() > 0:
-            Pk[i] = power[mask].mean()
+            Pk[i] = power_flat[mask].mean()
     
     return k_centers, Pk
 

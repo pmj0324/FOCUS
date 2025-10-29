@@ -36,6 +36,12 @@ class ResidualBlock(nn.Module):
         t_emb = self.time_mlp(t)[:, :, None, None]
         c_emb = self.cond_mlp(c)[:, :, None, None]
         
+        # Debug: Check tensor shapes
+        if t_emb.shape[0] != c_emb.shape[0]:
+            print(f"Batch size mismatch: t_emb={t_emb.shape}, c_emb={c_emb.shape}")
+            print(f"t.shape={t.shape}, c.shape={c.shape}")
+            print(f"x.shape={x.shape}")
+        
         h = self.block1(x)
         h = h + t_emb + c_emb
         h = self.block2(h)
@@ -88,8 +94,8 @@ class SimpleUNet(nn.Module):
         
         # Time embedding
         self.time_mlp = nn.Sequential(
-            SinusoidalPositionEmbeddings(base_channels),
-            nn.Linear(base_channels, time_dim),
+            SinusoidalPositionEmbeddings(time_dim),
+            nn.Linear(time_dim, time_dim),
             nn.ReLU(),
             nn.Linear(time_dim, time_dim),
         )

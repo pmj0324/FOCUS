@@ -1,8 +1,8 @@
-# Experiment 01: COSMO-like Configuration
+# Experiment 02: Large Model Configuration
 
 experiment:
-  name: "cosmo_baseline"
-  description: "COSMO baseline with Plateau scheduler, warmup, and enhanced visualization"
+  name: "large_baseline"
+  description: "Large model with 128 base channels, same as Experiment 01"
   created: "2024-10-28"
 
 # Data - use absolute paths
@@ -10,16 +10,16 @@ data:
   maps_path: "/home/work/Cosmology/FOCUS/processed_data/maps_normalized.npy"
   params_path: "/home/work/Cosmology/FOCUS/processed_data/params_normalized.npy"
   train_split: 0.9
-  num_workers: 4
+  num_workers: 30
   shuffle: true
 
-# Model - COSMO architecture (128 base channels)
+# Model - Large architecture (128 base channels)
 model:
   from: "SimpleUNet"
   in_channels: 1
   out_channels: 1
   cond_dim: 6
-  base_channels: 128  # COSMO uses 128
+  base_channels: 128  # Large model, same as Experiment 01
   channel_mults: [1, 2, 4, 8]
   time_dim: 256
 
@@ -32,10 +32,10 @@ diffusion:
 
 # Training
 training:
-  batch_size: 64  # COSMO batch size
+  batch_size: 64  # Large batch size, same as Experiment 01
   num_epochs: 200
-  lr: 1.0e-4  # COSMO learning rate
-  weight_decay: 1.0e-4
+  lr: 1.0e-4
+  weight_decay: 1.0e-2
   cfg_prob: 0.1  # 10% unconditional training for CFG
   sample_every: 1  # Sample every epoch
   gradient_clip: 1.0
@@ -46,10 +46,10 @@ training:
   # Scheduler: Plateau with warmup
   scheduler:
     name: "plateau"
-    factor: 0.3  # 70% decrease in LR
+    factor: 0.5  # 50% decrease in LR
     patience: 2  # Wait 2 epochs before reducing
-    min_lr: 1.0e-7
-    warmup_epochs: 5  # 5 epoch warmup
+    min_lr: 1.0e-10
+    warmup_epochs: 4  #  epoch warmup
 
 # Sampling
 sampling:

@@ -1,11 +1,15 @@
-# Experiment 01: COSMO-like Configuration
+# Example Diffusion Configuration
+# Set method: "diffusion" to use standard Diffusion (default)
 
 experiment:
-  name: "cosmo_baseline"
-  description: "COSMO baseline with Plateau scheduler, warmup, and enhanced visualization"
-  created: "2024-10-28"
+  name: "diffusion_example"
+  description: "Standard Diffusion with 128 base channels"
+  created: "2024-10-29"
 
-# Data - use absolute paths
+# Training method: "flow" or "diffusion"
+method: "diffusion"  # Can also omit this line (diffusion is default)
+
+# Data
 data:
   maps_path: "/home/work/Cosmology/FOCUS/processed_data/maps_normalized.npy"
   params_path: "/home/work/Cosmology/FOCUS/processed_data/params_normalized.npy"
@@ -13,17 +17,17 @@ data:
   num_workers: 4
   shuffle: true
 
-# Model - COSMO architecture (128 base channels)
+# Model - Use SimpleUNet for Diffusion
 model:
-  from: "SimpleUNet"
+  from: "SimpleUNet"  # Standard diffusion U-Net
   in_channels: 1
   out_channels: 1
   cond_dim: 6
-  base_channels: 128  # COSMO uses 128
+  base_channels: 128
   channel_mults: [1, 2, 4, 8]
-  time_dim: 256
+  time_dim: 256  # Time embedding dimension
 
-# Diffusion
+# Diffusion specific settings
 diffusion:
   timesteps: 1000
   beta_start: 1.0e-4
@@ -32,12 +36,12 @@ diffusion:
 
 # Training
 training:
-  batch_size: 64  # COSMO batch size
+  batch_size: 64
   num_epochs: 200
-  lr: 1.0e-4  # COSMO learning rate
+  lr: 1.0e-4
   weight_decay: 1.0e-4
   cfg_prob: 0.1  # 10% unconditional training for CFG
-  sample_every: 1  # Sample every epoch
+  sample_every: 1
   gradient_clip: 1.0
   
   # Optimizer
@@ -46,14 +50,14 @@ training:
   # Scheduler: Plateau with warmup
   scheduler:
     name: "plateau"
-    factor: 0.3  # 70% decrease in LR
-    patience: 2  # Wait 2 epochs before reducing
+    factor: 0.3
+    patience: 2
     min_lr: 1.0e-7
-    warmup_epochs: 5  # 5 epoch warmup
+    warmup_epochs: 5
 
-# Sampling
+# Sampling (for Diffusion)
 sampling:
-  method: "ddim"
+  method: "ddim"  # "ddpm" or "ddim"
   ddim_timesteps: 50
   cfg_scale: 2.0
   eta: 0.0

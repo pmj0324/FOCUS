@@ -1,8 +1,8 @@
-# Experiment 01: COSMO-like Configuration
+# Experiment 02: Large Model Configuration
 
 experiment:
-  name: "cosmo_baseline"
-  description: "COSMO baseline with Plateau scheduler, warmup, and enhanced visualization"
+  name: "large_baseline"
+  description: "Large model with 128 base channels, same as Experiment 01"
   created: "2024-10-28"
 
 # Data - use absolute paths
@@ -13,13 +13,13 @@ data:
   num_workers: 4
   shuffle: true
 
-# Model - COSMO architecture (128 base channels)
+# Model - Large architecture (128 base channels)
 model:
   from: "SimpleUNet"
   in_channels: 1
   out_channels: 1
   cond_dim: 6
-  base_channels: 128  # COSMO uses 128
+  base_channels: 128  # Large model, same as Experiment 01
   channel_mults: [1, 2, 4, 8]
   time_dim: 256
 
@@ -32,9 +32,9 @@ diffusion:
 
 # Training
 training:
-  batch_size: 64  # COSMO batch size
+  batch_size: 64  # Large batch size, same as Experiment 01
   num_epochs: 200
-  lr: 1.0e-4  # COSMO learning rate
+  lr: 1.0e-4
   weight_decay: 1.0e-4
   cfg_prob: 0.1  # 10% unconditional training for CFG
   sample_every: 1  # Sample every epoch

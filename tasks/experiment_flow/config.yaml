@@ -1,0 +1,72 @@
+# Experiment: Flow Matching
+# This experiment uses Flow Matching instead of Diffusion
+
+experiment:
+  name: "flow_matching_baseline"
+  description: "Flow Matching with 128 base channels for cosmological field generation"
+  created: "2024-10-29"
+  method: "flow"
+
+# Training method selection
+method: "flow"  # Use Flow Matching
+
+# Data - use absolute paths
+data:
+  maps_path: "/home/work/Cosmology/FOCUS/processed_data/maps_normalized.npy"
+  params_path: "/home/work/Cosmology/FOCUS/processed_data/params_normalized.npy"
+  train_split: 0.9
+  num_workers: 4
+  shuffle: true
+
+# Model - FlowUNet for Flow Matching
+model:
+  from: "FlowUNet"  # Flow Matching compatible U-Net
+  in_channels: 1
+  out_channels: 1
+  cond_dim: 6
+  base_channels: 128  # Large model, same as other experiments
+  channel_mults: [1, 2, 4, 8]
+  time_dim: 256  # Time embedding dimension for continuous time t ∈ [0,1]
+
+# Flow Matching specific settings
+flow_matching:
+  sigma_min: 0.0   # Minimum noise level (start from pure data)
+  sigma_max: 1.0   # Maximum noise level (end at pure noise)
+
+# Training
+training:
+  batch_size: 64  # Large batch size
+  num_epochs: 200
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  cfg_prob: 0.1  # 10% unconditional training for Classifier-Free Guidance
+  sample_every: 1  # Generate samples every epoch
+  gradient_clip: 1.0
+  
+  # Optimizer
+  optimizer: "adamw"
+  
+  # Scheduler: Plateau with warmup
+  scheduler:
+    name: "plateau"
+    factor: 0.3  # 70% decrease in LR
+    patience: 2  # Wait 2 epochs before reducing
+    min_lr: 1.0e-7
+    warmup_epochs: 5  # 5 epoch warmup
+
+# Sampling (Flow Matching specific)
+sampling:
+  method: "euler"  # ODE integration method: "euler" or "heun"
+  num_steps: 50    # Number of integration steps (fewer steps than Diffusion!)
+  cfg_scale: 2.0   # Classifier-free guidance scale
+  eta: 0.0         # Stochasticity (0 = deterministic, like DDIM)
+
+# Hardware
+device: "cuda"
+
+# Notes:
+# - Flow Matching uses continuous time t ∈ [0,1] instead of discrete timesteps
+# - Predicts vector field v instead of noise ε
+# - Typically faster sampling than Diffusion (10-50 steps vs 50-1000)
+# - Training objective: ||v_pred - (x_1 - x_0)||²
+

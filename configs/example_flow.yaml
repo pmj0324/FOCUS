@@ -1,0 +1,65 @@
+# Example Flow Matching Configuration
+# Set method: "flow" to use Flow Matching
+
+experiment:
+  name: "flow_matching_example"
+  description: "Flow Matching with 128 base channels"
+  created: "2024-10-29"
+
+# Training method: "flow" or "diffusion"
+method: "flow"
+
+# Data
+data:
+  maps_path: "/home/work/Cosmology/FOCUS/processed_data/maps_normalized.npy"
+  params_path: "/home/work/Cosmology/FOCUS/processed_data/params_normalized.npy"
+  train_split: 0.9
+  num_workers: 4
+  shuffle: true
+
+# Model - Use FlowUNet for Flow Matching
+model:
+  from: "FlowUNet"  # Flow Matching compatible U-Net
+  in_channels: 1
+  out_channels: 1
+  cond_dim: 6
+  base_channels: 128
+  channel_mults: [1, 2, 4, 8]
+  time_dim: 256  # Time embedding dimension
+
+# Flow Matching specific settings
+flow_matching:
+  sigma_min: 0.0   # Start from pure data (no noise)
+  sigma_max: 1.0   # End at pure noise
+
+# Training
+training:
+  batch_size: 64
+  num_epochs: 200
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  cfg_prob: 0.1  # 10% unconditional training for CFG
+  sample_every: 1
+  gradient_clip: 1.0
+  
+  # Optimizer
+  optimizer: "adamw"
+  
+  # Scheduler: Plateau with warmup
+  scheduler:
+    name: "plateau"
+    factor: 0.3
+    patience: 2
+    min_lr: 1.0e-7
+    warmup_epochs: 5
+
+# Sampling (for Flow Matching)
+sampling:
+  method: "euler"  # "euler" or "heun" for ODE integration
+  num_steps: 50    # Number of integration steps
+  cfg_scale: 2.0
+  eta: 0.0         # Stochasticity (0 = deterministic)
+
+# Hardware
+device: "cuda"
+
